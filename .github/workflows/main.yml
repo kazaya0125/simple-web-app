@@ -11,7 +11,6 @@ runs-on: ubntu-latest
 steps:
   - name: Checkout
     uses: actions/checkout@v4
-
+    
   - name: Build Docker image
-  
-  run: docker image -f ./app/Dockerfile -t simple-web-app .
+    run: docker image -f ./app/Dockerfile -t simple-web-app .
