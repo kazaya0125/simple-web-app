@@ -8,10 +8,9 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Build Docker image
-      
-    run: docker build -f ./app/Dockerfile -t simple-web-app .
+      - name: Build Docker image
+        run: docker build -f ./app/Dockerfile -t simple-web-app .
