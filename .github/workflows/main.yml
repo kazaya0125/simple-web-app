@@ -1,8 +1,16 @@
-name: Docker build
+name: Docker build and push
 
 on:
   push:
     branches: ["master"]
+
+permissions:
+    id-token: write
+    contents: read
+
+env:
+    AWS_RESION: ap-northeast-1
+    ECR_REPOSITORY: simple-web-app
 
 jobs:
   docker-build:
@@ -12,5 +20,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -f ./app/Dockerfile -t simple-web-app .
+      - name: Configure AWS credentials #AWS認証情報を設定する
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            aws-region: ${{env.AWS_RESION}}
+            role-to-assume: arn:aws:iam::749185460978:role/github-actions-ecr-role
+
+      - name: Login to Amazon ECR #ECRにログイン
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image #ビルド
+        run: docker build -f ./app/Dockerfile -t simple-web-app:ver2 .
+     
+      - name: ECR to push #ビルドしたものをECRへ
+        env:
+            REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker tag simple-web-app:ver2 $REGISTRY/${{ env.ECR_REPOSITORY }}:ver2
+          docker push $REGISTRY/${{ env.ECR_REPOSITORY }}:ver2
+
+    
+
