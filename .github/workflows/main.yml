@@ -2,7 +2,7 @@ name: Docker build
 
 on:
 push:
-branch: ["master]
+branch: ["master"]
 
 jobs:
 docker-build:
@@ -13,4 +13,5 @@ steps:
     uses: actions/checkout@v4
 
   - name: Build Docker image
-    run docker image -f ./app/Dockerfile -t simple-web-app .
+  
+  run: docker image -f ./app/Dockerfile -t simple-web-app .
