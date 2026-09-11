@@ -1,0 +1,24 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    image: simple-web-app-api:ver1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  db:
+    image: mariadb:10.5
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: studydb
+      MARIADB_USER: webapp
+      MARIADB_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+volumes:
+  mariadb_data:
+
