@@ -2,7 +2,7 @@ name: Docker build
 
 on:
 push:
-baranch: ["master]
+branch: ["master]
 
 jobs:
 docker-build:
