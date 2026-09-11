@@ -20,12 +20,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: check OIDC subject
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Repository ID: $GITHUB_REPOSITORY_ID"
+          echo "Owner ID: $GITHUB_REPOSITORY_OWNER_ID"
+
       - name: Configure AWS credentials #AWS認証情報を設定する
         uses: aws-actions/configure-aws-credentials@v4
         with:
             aws-region: ${{env.AWS_RESION}}
-            role-to-assume: arn:aws:iam::749185460978:oidc-provider/token.actions.githubusercontent.com
+            role-to-assume: arn:aws:iam::749185460978:role/github-actions-ecr-role
             #arn:aws:iam::749185460978:role/github-actions-ecr-role
+            #arn:aws:iam::749185460978:oidc-provider/token.actions.githubusercontent.com
 
       - name: Login to Amazon ECR #ECRにログイン
         id: login-ecr
