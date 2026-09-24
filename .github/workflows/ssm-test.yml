@@ -14,3 +14,17 @@ env:
 jobs:
     test-ssm:
         runs-on: ubuntu-latest
+        steps:
+          - name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+              aws-region: ${{ env.AWS_REGION }}
+              role-to-assume: arn:aws:iam::749185460978:role/github-actions-ecr-role
+
+          - name: Run command on EC2
+            run: |
+              aws ssm send-command \
+              --instance-ids i-0dcac0df79e18f072 \
+              --document-name "AWS-RunShellScript" \
+              --parameters 'commands=["pwd"]' \
+              --region ${{ env.AWS_REGION }}
