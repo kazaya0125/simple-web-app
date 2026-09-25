@@ -136,3 +136,5 @@ JOIN roles r
 WHERE u.organization_code = '99'
   AND u.username = 'vendor01'
   AND r.role_code = 'VENDOR';
+
+  -- CI/CD repeat test
