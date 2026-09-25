@@ -1,7 +1,10 @@
 name: TEST-SSM
 
-on:
-  workflow_dispatch:
+on: 
+  push:
+    branches: [master]
+#on:
+  #workflow_dispatch:
 
 permissions:
   id-token: write
