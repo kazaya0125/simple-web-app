@@ -1,0 +1,40 @@
+{
+  "family": "simple-web-app-task",
+  "taskRoleArn": "arn:aws:iam::749185460978:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::749185460978:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "simple-web-app",
+      "image": "749185460978.dkr.ecr.ap-northeast-1.amazonaws.com/simple-web-app:ver2",
+      "cpu": 0,
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "name": "simple-web-app-8080-tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "environment": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/simple-web-app-task",
+          "awslogs-create-group": "true",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

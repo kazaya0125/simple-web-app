@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
 
 permissions:
-    id-token: write
-    contents: read
+  id-token: write
+  contents: read
 
 env:
-    AWS_RESION: ap-northeast-1
-    ECR_REPOSITORY: simple-web-app
+  AWS_RESION: ap-northeast-1
+  ECR_REPOSITORY: simple-web-app
 
 jobs:
   docker-build:
@@ -25,27 +25,38 @@ jobs:
           echo "Repository ID: $GITHUB_REPOSITORY_ID"
           echo "Owner ID: $GITHUB_REPOSITORY_OWNER_ID"
 
-      - name: Configure AWS credentials #AWS認証情報を設定する
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-            aws-region: ${{env.AWS_RESION}}
-            role-to-assume: arn:aws:iam::749185460978:role/github-actions-ecr-role
-            #arn:aws:iam::749185460978:role/github-actions-ecr-role
-            #arn:aws:iam::749185460978:oidc-provider/token.actions.githubusercontent.com
+          aws-region: ${{ env.AWS_RESION }}
+          role-to-assume: arn:aws:iam::749185460978:role/github-actions-ecr-role
 
-      - name: Login to Amazon ECR #ECRにログイン
+      - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image #ビルド
+      - name: Build Docker image
         run: docker build -f ./app/Dockerfile -t simple-web-app:ver2 .
-     
-      - name: ECR to push #ビルドしたものをECRへ
+
+      - name: ECR to push
         env:
-            REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker tag simple-web-app:ver2 $REGISTRY/${{ env.ECR_REPOSITORY }}:ver2
           docker push $REGISTRY/${{ env.ECR_REPOSITORY }}:ver2
 
-    
+      - name: Render Amazon ECS task definition
+        id: render-task-definition
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: simple-web-app
+          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:ver2
 
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          service: simple-web-app-service
+          cluster: simple-web-app-cluster
+          wait-for-service-stability: true
