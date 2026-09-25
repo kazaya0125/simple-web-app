@@ -47,7 +47,7 @@ jobs:
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids i-0dcac0df79e18f072 \
             --document-name "AWS-RunShellScript" \
-            --parameters 'commands=["ls -l /home/ssm-user/work/DB/seed.sql"]' \
+            --parameters 'commands=["whoami"]' \
             --region ${{ env.AWS_REGION }} \
             --query "Command.CommandId" \
             --output text)
