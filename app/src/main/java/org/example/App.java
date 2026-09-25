@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,24 +25,29 @@ public class App extends HttpServlet {
 
         response.setContentType("text/plain; charset=UTF-8");
 
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+        try {
+            Driver driver = new org.mariadb.jdbc.Driver();
+            DriverManager.registerDriver(driver);
 
-            String sql = """
+            try (Connection connection = DriverManager.getConnection(url, user, password)) {
+
+                String sql = """
                     SELECT id, organization_code, username, account_type, enabled
                     FROM auth_db.users
                     """;
 
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);
 
-            while (resultSet.next()) {
-                response.getWriter().println(
+                while (resultSet.next()) {
+                    response.getWriter().println(
                         resultSet.getLong("id") + " " +
                         resultSet.getString("organization_code") + " " +
                         resultSet.getString("username") + " " +
                         resultSet.getString("account_type") + " " +
                         resultSet.getBoolean("enabled")
-                );
+                    );
+                }
             }
 
         } catch (SQLException e) {
