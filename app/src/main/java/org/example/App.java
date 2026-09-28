@@ -21,7 +21,7 @@ public class App extends HttpServlet {
 
         String url = "jdbc:mariadb://simple-web-app-db.cdg0iegkyfrh.ap-northeast-1.rds.amazonaws.com:3306/auth_db";
         String user = "admin";
-        String password = "現在使用しているパスワード";
+        String password = "Password";
 
         response.setContentType("text/html; charset=UTF-8");
 
