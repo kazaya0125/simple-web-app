@@ -27,6 +27,11 @@ public class App extends HttpServlet {
 
         try {
             Driver driver = new org.mariadb.jdbc.Driver();
+
+            response.getWriter().println(
+                "Driver loaded: " + driver.getClass().getName()
+            );
+
             DriverManager.registerDriver(driver);
 
             try (Connection connection = DriverManager.getConnection(url, user, password)) {
@@ -52,6 +57,7 @@ public class App extends HttpServlet {
 
         } catch (SQLException e) {
             response.getWriter().println("DB Connection failed!");
+            response.getWriter().println(e.getMessage());
             e.printStackTrace();
         }
     }
