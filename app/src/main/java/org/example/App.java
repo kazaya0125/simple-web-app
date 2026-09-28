@@ -21,7 +21,7 @@ public class App extends HttpServlet {
 
         String url = "jdbc:mariadb://simple-web-app-db.cdg0iegkyfrh.ap-northeast-1.rds.amazonaws.com:3306/auth_db";
         String user = "admin";
-        String password = "Password";
+        String password = "現在使用しているパスワード";
 
         response.setContentType("text/html; charset=UTF-8");
 
@@ -32,44 +32,103 @@ public class App extends HttpServlet {
 
             try (Connection connection = DriverManager.getConnection(url, user, password)) {
 
-                String sql = """
-                    SELECT id, organization_code, username, account_type, enabled
-                    FROM auth_db.users
-                    """;
+                String id = request.getParameter("id");
 
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);
+                if (id != null) {
 
-                response.getWriter().println("<html>");
-                response.getWriter().println("<head><meta charset='UTF-8'><title>ユーザー一覧</title></head>");
-                response.getWriter().println("<body>");
+                    String sql = """
+                        SELECT id, organization_code, username, account_type, enabled
+                        FROM auth_db.users
+                        WHERE id = %s
+                        """.formatted(id);
 
-                response.getWriter().println("<h1>ユーザー一覧</h1>");
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(sql);
 
-                response.getWriter().println("<table border='1'>");
-                response.getWriter().println("<tr>");
-                response.getWriter().println("<th>ID</th>");
-                response.getWriter().println("<th>組織コード</th>");
-                response.getWriter().println("<th>ユーザー名</th>");
-                response.getWriter().println("<th>種別</th>");
-                response.getWriter().println("<th>有効</th>");
-                response.getWriter().println("</tr>");
+                    if (resultSet.next()) {
 
-                while (resultSet.next()) {
-                    response.getWriter().println(
-                        "<tr>" +
-                        "<td>" + resultSet.getLong("id") + "</td>" +
-                        "<td>" + resultSet.getString("organization_code") + "</td>" +
-                        "<td>" + resultSet.getString("username") + "</td>" +
-                        "<td>" + resultSet.getString("account_type") + "</td>" +
-                        "<td>" + resultSet.getBoolean("enabled") + "</td>" +
-                        "</tr>"
-                    );
+                        response.getWriter().println("<html>");
+                        response.getWriter().println("<head><meta charset='UTF-8'><title>ユーザー編集</title></head>");
+                        response.getWriter().println("<body>");
+
+                        response.getWriter().println("<h1>ユーザー編集</h1>");
+
+                        response.getWriter().println("<p>ID: " + resultSet.getLong("id") + "</p>");
+
+                        response.getWriter().println("<p>");
+                        response.getWriter().println("組織コード: ");
+                        response.getWriter().println(resultSet.getString("organization_code"));
+                        response.getWriter().println("</p>");
+
+                        response.getWriter().println("<p>");
+                        response.getWriter().println("ユーザー名: ");
+                        response.getWriter().println("<input type='text' value='" +
+                            resultSet.getString("username") + "'>");
+                        response.getWriter().println("</p>");
+
+                        response.getWriter().println("<p>");
+                        response.getWriter().println("種別: ");
+                        response.getWriter().println(resultSet.getString("account_type"));
+                        response.getWriter().println("</p>");
+
+                        response.getWriter().println("<p>");
+                        response.getWriter().println("有効: ");
+                        response.getWriter().println(resultSet.getBoolean("enabled"));
+                        response.getWriter().println("</p>");
+
+                        response.getWriter().println("<button>更新</button>");
+
+                        response.getWriter().println("</body>");
+                        response.getWriter().println("</html>");
+
+                    }
+
+                } else {
+
+                    String sql = """
+                        SELECT id, organization_code, username, account_type, enabled
+                        FROM auth_db.users
+                        """;
+
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(sql);
+
+                    response.getWriter().println("<html>");
+                    response.getWriter().println("<head><meta charset='UTF-8'><title>ユーザー一覧</title></head>");
+                    response.getWriter().println("<body>");
+
+                    response.getWriter().println("<h1>ユーザー一覧</h1>");
+
+                    response.getWriter().println("<table border='1'>");
+                    response.getWriter().println("<tr>");
+                    response.getWriter().println("<th>ID</th>");
+                    response.getWriter().println("<th>組織コード</th>");
+                    response.getWriter().println("<th>ユーザー名</th>");
+                    response.getWriter().println("<th>種別</th>");
+                    response.getWriter().println("<th>有効</th>");
+                    response.getWriter().println("<th>操作</th>");
+                    response.getWriter().println("</tr>");
+
+                    while (resultSet.next()) {
+
+                        response.getWriter().println(
+                            "<tr>" +
+                            "<td>" + resultSet.getLong("id") + "</td>" +
+                            "<td>" + resultSet.getString("organization_code") + "</td>" +
+                            "<td>" + resultSet.getString("username") + "</td>" +
+                            "<td>" + resultSet.getString("account_type") + "</td>" +
+                            "<td>" + resultSet.getBoolean("enabled") + "</td>" +
+                            "<td><a href='/app/hello?id=" +
+                            resultSet.getLong("id") +
+                            "'>編集</a></td>" +
+                            "</tr>"
+                        );
+                    }
+
+                    response.getWriter().println("</table>");
+                    response.getWriter().println("</body>");
+                    response.getWriter().println("</html>");
                 }
-
-                response.getWriter().println("</table>");
-                response.getWriter().println("</body>");
-                response.getWriter().println("</html>");
 
             }
 
