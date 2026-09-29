@@ -1,4 +1,4 @@
-package org.example;
+package com.users;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,8 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@WebServlet("/hello")
-public class App extends HttpServlet {
+@WebServlet("/users")
+public class UserServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -58,7 +58,7 @@ public class App extends HttpServlet {
 
                                 response.getWriter().println("<h1>ユーザー編集</h1>");
 
-                                response.getWriter().println("<form method='post' action='/app/hello'>");
+                                response.getWriter().println("<form method='post' action='/app/users'>");
 
                                 response.getWriter().println(
                                     "<input type='hidden' name='id' value='" +
@@ -145,7 +145,7 @@ public class App extends HttpServlet {
                                 "<td>" + resultSet.getString("username") + "</td>" +
                                 "<td>" + resultSet.getString("account_type") + "</td>" +
                                 "<td>" + resultSet.getBoolean("enabled") + "</td>" +
-                                "<td><a href='/app/hello?id=" +
+                                "<td><a href='/app/users?id=" +
                                 resultSet.getLong("id") +
                                 "'>編集</a></td>" +
                                 "</tr>"
@@ -209,7 +209,7 @@ public class App extends HttpServlet {
                 }
 
                 // 更新後、ユーザー一覧へ戻る
-                response.sendRedirect("/app/hello");
+                response.sendRedirect("/app/users");
             }
 
         } catch (SQLException e) {
