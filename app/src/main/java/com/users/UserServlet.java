@@ -33,6 +33,21 @@ public class UserServlet extends HttpServlet {
 
             try (Connection connection = DriverManager.getConnection(url, user, password)) {
 
+                // ECS → RDS のSSL/TLS接続状態を確認
+                try (
+                    Statement sslStatement = connection.createStatement();
+                    ResultSet sslResultSet =
+                        sslStatement.executeQuery("SHOW STATUS LIKE 'Ssl_version'")
+                ) {
+
+                    if (sslResultSet.next()) {
+                        System.out.println(
+                            "ECS -> RDS Ssl_version = " +
+                            sslResultSet.getString("Value")
+                        );
+                    }
+                }
+
                 String id = request.getParameter("id");
 
                 // idが指定されている場合：編集画面
@@ -190,6 +205,21 @@ public class UserServlet extends HttpServlet {
             DriverManager.registerDriver(driver);
 
             try (Connection connection = DriverManager.getConnection(url, user, password)) {
+
+                // ECS → RDS のSSL/TLS接続状態を確認
+                try (
+                    Statement sslStatement = connection.createStatement();
+                    ResultSet sslResultSet =
+                        sslStatement.executeQuery("SHOW STATUS LIKE 'Ssl_version'")
+                ) {
+
+                    if (sslResultSet.next()) {
+                        System.out.println(
+                            "ECS -> RDS Ssl_version = " +
+                            sslResultSet.getString("Value")
+                        );
+                    }
+                }
 
                 String id = request.getParameter("id");
                 String username = request.getParameter("username");
